@@ -76,15 +76,15 @@ ALTER TABLE sinistro ADD CONSTRAINT sinistro_segurado_fkey FOREIGN KEY (segurado
 ALTER TABLE pericia ADD CONSTRAINT pericia_perito_fkey FOREIGN KEY (perito) REFERENCES perito (cpf);
 
 --QUINTA QUESTÃO
-Atributos que devem/podem ser NOT NULL: 
-automóvel: dono
-oficina: endereço
-perícia: perito, resultado
-perito: nome
-reparo: reparo, valor
-segurado: nome
-seguro: segurado, automóvel, início, validade, tipo
-sinistro: segurado, hora, local, sinistro
+--Atributos que devem/podem ser NOT NULL: 
+--automóvel: dono
+--oficina: endereço
+--perícia: perito, resultado
+--perito: nome
+--reparo: reparo, valor
+--segurado: nome
+--seguro: segurado, automóvel, início, validade, tipo
+--sinistro: segurado, hora, local, sinistro
 
 --SEXTA QUESTÃO
 DROP TABLE sinistro;
