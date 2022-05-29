@@ -1,0 +1,77 @@
+-- QUESTÃO 1
+CREATE TABLE TAREFAS(
+numero bigint,
+tarefa text,
+responsavel char(11),
+prioridade int,
+estado char(1));
+
+-- QUESTÃO 2
+ERROR:  integer out of range
+solução: 
+
+-- QUESTÃO 4:
+DELETE FROM tarefas WHERE estado IS NULL;
+
+-- QUESTÃO 5:
+ALTER TABLE tarefas ADD UNIQUE (id);
+
+-- QUESTÃO 6:
+--A) a coluna foi criada com o char(11) para que sempre tenha exatos 11 caracteres.
+--B) A agr P, R agr E, F agr C
+UPDATE tarefas SET status = 'P' WHERE status = 'A';
+UPDATE tarefas SET status = 'C' WHERE status = 'F';
+ALTER TABLE tarefas ADD CONSTRAINT status_chk CHECK (status = 'P' or status = 'E' or status = 'C');
+
+--QUESTÃO 7:
+UPDATE tarefas SET prioridade = 5 WHERE prioridade < 5;
+ALTER TABLE tarefas DROP CONSTRAINT prioridade_num_chk;
+ALTER TABLE tarefas ADD CONSTRAINT prioridade_num_chk CHECK (prioridade > -1 and prioridade < 6);
+UPDATE tarefas SET prioridade = 4 WHERE id = 2147483648;
+
+-- QUESTÃO 8:
+CREATE TABLE FUNCIONARIO(
+cpf char(11) PRIMARY KEY,
+data_nasc TIMESTAMP NOT NULL,
+nome text NOT NULL,
+funcao text NOT NULL,
+nivel char(1),
+superior_cpf char(11) REFERENCES funcionario (cpf),
+CHECK ((superior_cpf IS NOT NULL and funcao = 'LIMPEZA') or (superior_cpf IS NULL and funcao = 'SUP_LIMPEZA')));
+
+-- QUESTÃO 9:
+-- são executadas
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678914', '1990-01-10', 'Manoel da Silva', 'SUP_LIMPEZA', 'S', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678915', '2000-05-07', 'Marcos Andrade', 'SUP_LIMPEZA', 'J', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678916', '2002-09-07', 'Marcos Pimenta', 'LIMPEZA', 'P', '12345678914');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678917', '2001-09-07', 'Bira Andrade', 'LIMPEZA', 'J', '12345678914');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678918', '2000-12-17', 'José Andrade', 'LIMPEZA', 'S', '12345678914');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678919', '2002-09-07', 'Ubirajara Andrade', 'SUP_LIMPEZA', 'P', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678920', '2002-09-10', 'Kerlon Bala', 'LIMPEZA', 'P', '12345678915');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678921', '1998-10-27', 'Han Solo', 'SUP_LIMPEZA', 'S', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678922', '2002-05-13', 'Indiana Jones', 'LIMPEZA', 'P', '12345678919');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678923', '2002-08-17', 'Josefino Pinto', 'LIMPEZA', 'S', '12345678919');
+-- não são executadas
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678914', '1990-01-10', null, 'SUP_LIMPEZA', 'S', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678915', '2000-05-07', 'Marcos Andrade', null, 'J', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES (null, '2002-09-07', 'Marcos Pimenta', 'LIMPEZA', 'P', '12345678914');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678917', '2001-09-07', 'Bira Andrade', 'LIMPEZA', 'I', '12345678914');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678918', '2000-12-17', 'José Andrade', 'LIMPEZA', 'S', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678919', null, 'Ubirajara Andrade', 'SUP_LIMPEZA', 'P', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678920', '2002-09-10', 'Kerlon Bala', 'LIMPEZA', 'P', '12345678915');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678921', '1998-10-27', 'Han Solo', 'LIMPEZA', 'S', null);
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678922', '2002-05-13', 'Indiana Jones', 'LIMPEZA', 'K', '12345678919');
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678923', '2002-08-17', 'Josefino Pinto', 'LIMPEZA', 'S', null);
+
+-- QUESTÃO 10:
+ALTER TABLE tarefas ADD CONSTRAINT resp_cpf_fk FOREIGN KEY (func_resp_cpf) REFERENCES funcionario(cpf) ON DELETE RESTRICT;
+ERROR:  update or delete on table "funcionario" violates foreign key constraint "resp_cpf_fk" on table "tarefas"
+DETAIL:  Key (cpf)=(32323232911) is still referenced from table "tarefas".
+
+-- QUESTÃO 11:
+ALTER TABLE tarefas ADD CONSTRAINT resp_cpf_chk CHECK(func_resp_cpf IS NOT NULL and (status = 'E' or status = 'C') or ((func_resp_cpf IS NULL or func_resp_cpf IS NOT NULL) and status = 'P'));
+DELETE FROM funcionario WHERE cpf = '12345678923';
+ERROR:  new row for relation "tarefas" violates check constraint "resp_cpf_chk"
+DETAIL:  Failing row contains (214748658, limpar janelas do 4o andar, null, 1, C).
+CONTEXT:  SQL statement "UPDATE ONLY "public"."tarefas" SET "func_resp_cpf" = NULL WHERE $1 OPERATOR(pg_catalog.=) "func_resp_cpf""
+
